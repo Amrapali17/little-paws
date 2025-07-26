@@ -1,0 +1,63 @@
+<!-- admin-pets.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Pets – Admin Panel</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #e0f7fa; }
+    h1 { color: #006064; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 1rem; border: 1px solid #ccc; text-align: left; }
+    th { background: #00acc1; color: white; }
+    img { width: 100px; height: auto; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <h1>All Pets 🐶🐱 – Admin View</h1>
+  <table id="petsTable">
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Breed</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // ✅ Protect the page
+    const token = localStorage.getItem("authToken");
+    const isAdmin = localStorage.getItem("isAdmin");
+  
+    if (!token || isAdmin !== "true") {
+      alert("Unauthorized access! Admins only.");
+      window.location.href = "home.html";
+    }
+
+    // ✅ Fetch pets from backend
+    fetch("http://localhost:5000/api/pets")
+      .then((res) => res.json())
+      .then((data) => {
+        const tbody = document.querySelector("#petsTable tbody");
+        data.pets.forEach((pet) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><img src="${pet.photoUrl}" alt="${pet.name}" /></td>
+            <td>${pet.name}</td>
+            <td>${pet.breed}</td>
+            <td>${pet.age}</td>
+            <td>${pet.gender}</td>
+            <td>${pet.category}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch((err) => console.error("Failed to fetch pets:", err));
+  </script>
+</body>
+</html>
