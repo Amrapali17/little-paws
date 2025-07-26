@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Profile | Little Paws 🐾</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff9f0;
+      padding: 20px;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+    .profile-container {
+      max-width: 500px;
+      margin: auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .dark .profile-container {
+      background: #2a2a2a;
+    }
+    h1 {
+      text-align: center;
+      color: #ff914d;
+      margin-bottom: 20px;
+    }
+    .info {
+      margin: 20px 0;
+      font-size: 1.1rem;
+    }
+    .info strong {
+      color: #b35e00;
+    }
+    .logout-btn {
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      background: #ff914d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: background 0.3s;
+    }
+    .logout-btn:hover {
+      background: #e6782a;
+    }
+    .spinner {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 1.2rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <button id="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+  <div class="profile-container">
+    <h1>🐾 User Profile</h1>
+    <div class="spinner" id="spinner">Loading your profile...</div>
+    <div class="info" id="profile" style="display:none;">
+      <p><strong>Name:</strong> <span id="name"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('authToken');
+    const spinner = document.getElementById('spinner');
+    const profile = document.getElementById('profile');
+
+    if (!token) {
+      alert('Not logged in. Redirecting to login...');
+      window.location.href = 'login.html';
+    }
+
+    fetch('http://localhost:5000/api/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Invalid or expired token');
+      return res.json();
+    })
+    .then(data => {
+      document.getElementById('name').innerText = data.user.fullName || "Unknown";
+      document.getElementById('email').innerText = data.user.email || "Not provided";
+      spinner.style.display = 'none';
+      profile.style.display = 'block';
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Session expired or unauthorized. Please log in again.');
+      localStorage.removeItem('authToken');
+      window.location.href = 'login.html';
+    });
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      window.location.href = 'home.html';
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+    }
+  </script>
+</body>
+</html>

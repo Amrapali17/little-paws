@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - Little Paws 🐾</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #fff1e0, #ffd7b3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background cute pet image, semi-transparent */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      background: url('https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=400&q=80') no-repeat center/contain;
+      opacity: 0.15;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    .register-container {
+      position: relative;
+      background: #ffffffee; /* slightly translucent white */
+      padding: 3rem 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 12px 28px rgba(255, 165, 71, 0.25);
+      width: 380px;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      border: 2px solid #ffb366;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .register-container:hover {
+      box-shadow: 0 18px 35px rgba(255, 165, 71, 0.45);
+    }
+
+    h2 {
+      margin: 0 0 1.6rem 0;
+      color: #d46200;
+      font-weight: 700;
+      font-size: 1.9rem;
+      text-align: center;
+      letter-spacing: 1.2px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+    }
+
+    label {
+      font-weight: 600;
+      color: #a64d00;
+      font-size: 0.9rem;
+      margin-left: 0.3rem;
+      user-select: none;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    input[type="password"] {
+      padding: 0.8rem 1.2rem;
+      border: 2px solid #ffa347;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 400;
+      color: #663300;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      resize: vertical;
+      box-shadow: inset 1px 1px 5px #ffdab3;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    textarea:focus,
+    input[type="password"]:focus {
+      border-color: #d46200;
+      box-shadow: 0 0 8px #ffb366aa;
+    }
+
+    textarea {
+      min-height: 90px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    button {
+      margin-top: 0.7rem;
+      background: #ff9f3b;
+      color: white;
+      font-weight: 700;
+      border: none;
+      border-radius: 30px;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      font-size: 1.15rem;
+      letter-spacing: 0.05em;
+      box-shadow: 0 8px 15px rgba(255, 159, 59, 0.35);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      background: #d46200;
+      box-shadow: 0 10px 20px rgba(212, 98, 0, 0.5);
+    }
+
+    .bottom-text {
+      margin-top: 1.4rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #a64d00;
+      user-select: none;
+    }
+
+    .bottom-text a {
+      color: #d46200;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-text a:hover {
+      color: #b34c00;
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 420px) {
+      .register-container {
+        width: 90vw;
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h2>Register to Little Paws</h2>
+    <form id="register-form" onsubmit="handleRegister(event)">
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" placeholder="Your full name" required />
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" placeholder="+91 12345 67890" required pattern="[+0-9\s\-]{7,15}" />
+
+      <label for="reason">Why do you want to adopt?</label>
+      <textarea id="reason" name="reason" placeholder="Tell us why..." required></textarea>
+
+      <label for="password">Create Password</label>
+      <input type="password" id="password" name="password" placeholder="********" required minlength="6" />
+
+      <button type="submit">Register</button>
+    </form>
+    <div class="bottom-text">
+      Already have an account? <a href="login.html">Login here</a>
+    </div>
+  </div>
+
+  <script>
+    async function handleRegister(e) {
+      e.preventDefault();
+      const fullname = e.target.fullname.value.trim();
+      const email = e.target.email.value.trim().toLowerCase(); // ✅ normalize email
+      const phone = e.target.phone.value.trim();
+      const reason = e.target.reason.value.trim();
+      const password = e.target.password.value.trim();
+  
+      if (!fullname || !email || !phone || !reason || !password) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters.');
+        return;
+      }
+  
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: fullname,
+            email,
+            password
+          })
+        });
+  
+        const data = await response.json();
+        console.log('Register response:', data);
+  
+        if (!response.ok || !data.success) {
+          alert(data.message || 'Registration failed.');
+          return;
+        }
+  
+        alert(`🎉 Thank you for registering, ${fullname}!`);
+        window.location.href = 'login.html';
+  
+      } catch (err) {
+        console.error('Registration error:', err);
+        alert('Something went wrong. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>  

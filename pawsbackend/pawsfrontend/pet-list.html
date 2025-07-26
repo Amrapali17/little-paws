@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Pets – Little Paws 🐾</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff8f0;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #1f1f1f;
+      color: #fff;
+    }
+
+    header {
+      background: #ffd1a9;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    body.dark header {
+      background: #333;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #b35e00;
+    }
+
+    #theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    ul#pet-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      min-height: 200px;
+    }
+
+    ul#pet-list li {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    body.dark ul#pet-list li {
+      background: #2a2a2a;
+    }
+
+    ul#pet-list li:hover {
+      transform: translateY(-4px);
+    }
+
+    ul#pet-list img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.8rem;
+    }
+
+    ul#pet-list h3 {
+      margin: 0.2rem 0;
+      font-size: 1.1rem;
+      color: #b35e00;
+    }
+
+    ul#pet-list p {
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+    }
+
+    ul#pet-list small {
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    body.dark ul#pet-list small {
+      color: #ccc;
+    }
+
+    #last-updated {
+      font-size: 0.8rem;
+      color: #b35e00;
+      text-align: center;
+      margin-top: 1rem;
+      font-style: italic;
+    }
+
+    body.dark #last-updated {
+      color: #ffb84d;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #663300;
+      background: #ffd1a9;
+      margin-top: 2rem;
+    }
+
+    body.dark footer {
+      background: #333;
+      color: white;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 1rem;
+    }
+
+    .back-link a {
+      color: #b35e00;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: 1rem;
+      color: #b35e00;
+    }
+
+    body.dark .loading {
+      color: #ffb84d;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Little Paws 🐾</div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">🌓</button>
+  </header>
+
+  <main>
+    <h2 style="text-align:center; color:#b35e00;">Meet Our Adorable Pets</h2>
+    <ul id="pet-list" aria-live="polite" aria-busy="true">
+      <li class="loading">Loading pets...</li>
+    </ul>
+    <div id="last-updated"></div>
+    <div class="back-link">
+      <a href="home.html">← Back to Home</a>
+    </div>
+  </main>
+
+  <footer>© 2025 Little Paws 🐾 — All rights reserved</footer>
+
+  <script>
+    async function fetchPets() {
+      const list = document.getElementById('pet-list');
+      const lastUpdated = document.getElementById('last-updated');
+      list.setAttribute('aria-busy', 'true');
+      list.innerHTML = '<li class="loading">Loading pets...</li>';
+      lastUpdated.textContent = '';
+
+      try {
+        const res = await fetch('http://localhost:5000/api/pets');
+        const data = await res.json();
+        list.setAttribute('aria-busy', 'false');
+        list.innerHTML = '';
+
+        if (!data.pets || data.pets.length === 0) {
+          list.innerHTML = '<li style="grid-column: 1/-1; text-align:center;">No pets available right now.</li>';
+          return;
+        }
+
+        data.pets.forEach(pet => {
+          let imageUrl = 'https://placekitten.com/400/300'; // fallback image
+
+          if (pet.photoUrl && typeof pet.photoUrl === 'string') {
+            if (pet.photoUrl.startsWith('http')) {
+              imageUrl = pet.photoUrl;
+            } else {
+              imageUrl = `http://localhost:5000${pet.photoUrl.startsWith('/') ? '' : '/'}${pet.photoUrl}`;
+            }
+          }
+
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <img src="${imageUrl}" alt="Photo of ${pet.name || 'a pet'}" />
+            <h3>${pet.name || 'Unnamed Pet'} (${pet.type || 'Unknown type'})</h3>
+            <p>${pet.description || 'No description provided.'}</p>
+            <small>Breed: ${pet.breed || 'Unknown'} • Age: ${pet.age ? pet.age + ' months' : 'N/A'}</small>
+          `;
+          list.appendChild(li);
+        });
+
+        const now = new Date();
+        lastUpdated.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+      } catch (err) {
+        console.error('Failed to fetch pets:', err);
+        list.setAttribute('aria-busy', 'false');
+        list.innerHTML = '<li style="color:red; grid-column:1/-1; text-align:center;">Unable to load pets. Please try again later.</li>';
+      }
+    }
+
+    fetchPets();
+    setInterval(fetchPets, 8000); // refresh every 8 seconds
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+  </script>
+</body>
+</html>

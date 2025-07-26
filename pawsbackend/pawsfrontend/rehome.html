@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rehome Your Pet – Little Paws 🐾</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff8f0;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h2 {
+      text-align: center;
+      color: #b35e00;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff3e0;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      background: #ffa347;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #d46200;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Rehome Your Pet 🐾</h2>
+
+  <form id="rehome-form" enctype="multipart/form-data">
+    <label for="name">Pet Name</label>
+    <input type="text" name="name" required />
+
+    <label for="type">Type</label>
+    <select name="type" required>
+      <option value="">Select</option>
+      <option value="kitten">Kitten</option>
+      <option value="adult-cat">Adult Cat</option>
+      <option value="puppy">Puppy</option>
+      <option value="adult-dog">Adult Dog</option>
+    </select>
+
+    <label for="breed">Breed</label>
+    <input type="text" name="breed" />
+
+    <label for="age">Age (in months)</label>
+    <input type="number" name="age" min="0" required />
+
+    <label for="description">Description</label>
+    <textarea name="description" required></textarea>
+
+    <label for="photo">Upload Pet Photo</label>
+    <input type="file" name="photo" accept="image/*" required />
+
+    <label for="location">Location</label>
+    <input type="text" name="location" required />
+
+    <button type="submit">Submit for Adoption</button>
+
+    <div class="message" id="message"></div>
+  </form>
+
+  <script>
+    if (!localStorage.getItem('authToken')) {
+  alert("Please login to rehome a pet.");
+  location.href = 'login.html';
+}
+
+    const form = document.getElementById('rehome-form');
+    const msgDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const token = localStorage.getItem('authToken');
+
+      try {
+        const res = await fetch('http://localhost:5000/api/pets', {
+          method: 'POST',
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          msgDiv.innerText = "Pet submitted successfully! 🐾";
+          form.reset();
+        } else {
+          msgDiv.innerText = "Failed to submit: " + data.message;
+        }
+      } catch (err) {
+        console.error(err);
+        msgDiv.innerText = "Something went wrong. Try again!";
+      }
+    });
+  </script>
+</body>
+</html>

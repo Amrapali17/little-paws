@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Little Paws 🐾</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      width: 360px;
+    }
+    h2 {
+      text-align: center;
+      color: #b35e00;
+      margin-bottom: 1.5rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    label {
+      font-weight: 600;
+      color: #663300;
+    }
+    input[type="email"],
+    input[type="password"] {
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #ffa347;
+      border-radius: 20px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #b35e00;
+    }
+    button {
+      background: #ffa347;
+      color: white;
+      font-weight: 700;
+      border: none;
+      border-radius: 20px;
+      padding: 0.8rem;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background: #b35e00;
+    }
+    .bottom-text {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #663300;
+    }
+    .bottom-text a {
+      color: #b35e00;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .bottom-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login to Little Paws</h2>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="********" required />
+
+      <button type="submit">Login</button>
+    </form>
+    <div class="bottom-text">
+      Don't have an account? <a href="register.html">Register here</a>
+    </div>
+  </div>
+
+  <script>
+    async function handleLogin(e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        console.log("Login response:", data);
+
+        if (!response.ok || !data.success) {
+          alert(data.message || 'Login failed. Try again.');
+          return;
+        }
+
+        // Save token for future authenticated requests
+        localStorage.setItem('authToken', data.token);
+
+        alert('Login successful!');
+        // Redirect to home page or user profile
+        window.location.href = 'home.html';
+      } catch (err) {
+        console.error("Login error:", err);
+        alert('Something went wrong. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>

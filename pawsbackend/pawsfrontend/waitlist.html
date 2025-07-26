@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Waitlist - Little Paws 🐾</title>
+  <style>
+    body { font-family: sans-serif; background: #fef9f4; padding: 2rem; }
+    h1 { color: #b35900; }
+    form { max-width: 500px; margin: auto; background: #fff; padding: 2rem; border-radius: 10px; }
+    input { width: 100%; padding: 1rem; margin: 1rem 0; border: 1px solid #ccc; border-radius: 8px; }
+    button { background: #ffaa66; color: white; border: none; padding: 0.8rem 2rem; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Join the Waitlist</h1>
+  <form onsubmit="event.preventDefault(); alert('You’ve been added to the waitlist!')">
+    <input type="text" placeholder="Full Name" required />
+    <input type="email" placeholder="Email Address" required />
+    <input type="text" placeholder="Preferred Pet Type (kitten, puppy, etc.)" required />
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Help - Little Paws 🐾</title>
+  <style>
+    body { font-family: sans-serif; background: #fff8f0; padding: 2rem; }
+    h1 { color: #c26600; }
+    form { max-width: 500px; margin: auto; background: #fff; padding: 2rem; border-radius: 10px; }
+    input, textarea { width: 100%; padding: 1rem; margin: 1rem 0; border: 1px solid #ccc; border-radius: 8px; }
+    button { background: #ff944d; color: #fff; border: none; padding: 0.8rem 2rem; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Need Help? Contact Us</h1>
+  <form onsubmit="event.preventDefault(); alert('Message submitted!')">
+    <input type="text" placeholder="Your Name" required />
+    <input type="email" placeholder="Your Email" required />
+    <textarea rows="5" placeholder="Describe your issue..." required></textarea>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

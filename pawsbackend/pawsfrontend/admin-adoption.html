@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Adoption Requests - Admin</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 1rem; background: #fff8f0; color: #333; }
+  table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #f4a261; color: white; }
+  tr:nth-child(even) { background-color: #f9f9f9; }
+  h1 { color: #b35e00; }
+</style>
+</head>
+<body>
+  <h1>Adoption Requests</h1>
+  <table id="adoptions-table" aria-label="List of adoption requests">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Reason</th>
+        <th>Pet ID</th>
+        <th>Requested At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Adoption data will load here -->
+    </tbody>
+  </table>
+
+  <script>
+    async function fetchAdoptions() {
+      try {
+        const response = await fetch('http://localhost:5000/api/adoptions');
+        const data = await response.json();
+
+        const tbody = document.querySelector('#adoptions-table tbody');
+        tbody.innerHTML = ''; // Clear previous content
+
+        data.adoptions.forEach(({ name, email, reason, pet, createdAt }) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${name}</td>
+            <td>${email}</td>
+            <td>${reason}</td>
+            <td>${pet || 'N/A'}</td>
+            <td>${new Date(createdAt).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert('Failed to load adoption requests. Check console for details.');
+        console.error(error);
+      }
+    }
+
+    // Fetch adoption requests on page load
+    fetchAdoptions();
+  </script>
+</body>
+</html>

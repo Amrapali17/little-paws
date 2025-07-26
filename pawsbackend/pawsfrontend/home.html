@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Little Paws 🐾 - That Leads to Happiness</title>
+  <meta name="description" content="Little Paws 🐾 - Find your furry friend and experience unconditional love. Adopt your perfect kitten or dog today!" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #fff8f0;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #1f1f1f;
+      color: white;
+    }
+
+    nav {
+      background: #ffd1a9;
+      padding: 1rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .dark nav { background: #333; color: white; }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #b35e00;
+    }
+    nav ul {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    nav ul li a {
+      color: #663300;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav ul li a:hover {
+      color: #994d00;
+    }
+    .profile {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: url('https://i.pravatar.cc/36') center/cover;
+      border: 2px solid #b35e00;
+      cursor: pointer;
+    }
+
+    .tagline {
+      background: #fff3e0;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #b35e00;
+    }
+    .dark .tagline { background: #333; }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 2rem 1rem;
+    }
+
+    .below-pets {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 3rem auto;
+    }
+    .below-pets section {
+      background: #fff3e0;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 280px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+
+    .waitlist {
+      background: #fff3e0;
+      border: 2px dashed #ffa347;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+    .waitlist input[type="email"],
+    .waitlist input[type="text"],
+    .waitlist textarea {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ffa347;
+      border-radius: 20px;
+      width: 80%;
+      margin-bottom: 1rem;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    .waitlist button {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 20px;
+      background: #ffa347;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #chatbot-window {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 300px;
+      height: 360px;
+      background: white;
+      border: 2px solid #ffa347;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+    }
+    #chatbot-header {
+      background: #ffa347;
+      padding: 0.8rem;
+      color: white;
+      font-weight: bold;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    #chat-messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      font-size: 0.9rem;
+    }
+    #chat-input-area {
+      display: flex;
+      border-top: 1px solid #eee;
+    }
+    #chat-input {
+      flex: 1;
+      border: none;
+      padding: 0.5rem 0.8rem;
+      border-bottom-left-radius: 12px;
+      outline: none;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    #chat-send {
+      background: #ffa347;
+      border: none;
+      padding: 0 1rem;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-bottom-right-radius: 12px;
+      font-size: 1rem;
+    }
+
+    footer {
+      background: #ffd1a9;
+      text-align: center;
+      padding: 1rem;
+      color: #663300;
+      margin-top: 3rem;
+    }
+
+    .dark footer,
+    .dark .waitlist,
+    .dark .below-pets section {
+      background: #333;
+      color: white;
+    }
+
+    button#theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      #chatbot-window {
+        width: 95%;
+        right: 2.5%;
+        height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+  <nav>
+    <div class="logo">Little Paws 🐾</div>
+    <ul id="nav-links"></ul>
+    <div class="profile" onclick="location.href='user-profile.html'"></div>
+  </nav>
+
+  <div class="tagline" id="tagline">Welcome, Guest — Little Paws 🐾 Leads to Happiness</div>
+
+  <div class="container">
+
+    <!-- ✅ Only the "See All Pets" button kept -->
+    <div style="text-align:center; margin-top:2rem;">
+      <a href="pet-list.html">
+        <button style="background:#ffa347;color:white;padding:0.8rem 1.5rem;border:none;border-radius:25px;font-size:1.1rem;font-weight:600;cursor:pointer;">See All Pets</button>
+      </a>
+    </div>
+
+    <div class="below-pets">
+      <section onclick="location.href='video-chat.html'"><h3>Video Conferencing</h3><p>Chat with pet advisors face-to-face.</p></section>
+      <section onclick="location.href='contact.html'"><h3>Contact</h3><p>Email: contact@littlepaws.com</p></section>
+      <section onclick="location.href='help.html'"><h3>Help</h3><p>Check FAQs or contact support anytime.</p></section>
+    </div>
+
+    <div class="waitlist">
+      <h2>Join Our Waitlist</h2>
+      <input type="email" placeholder="Enter your email" id="email-input" />
+      <br />
+      <button onclick="notifyUser()">Notify Me</button>
+    </div>
+  </div>
+  
+  <div class="waitlist">
+    <h2>Want to Adopt Directly?</h2>
+    <p>Let us know who you're interested in adopting.</p>
+    <form id="direct-adoption-form" onsubmit="submitAdoption(event)">
+      <input type="text" id="adopt-name" placeholder="Your Name" required /><br /><br />
+      <input type="email" id="adopt-email" placeholder="Your Email" required /><br /><br />
+      <input type="text" id="adopt-pet" placeholder="Pet Name (e.g. Bella)" required /><br /><br />
+      <textarea id="adopt-reason" placeholder="Why do you want to adopt?" rows="3" required></textarea><br /><br />
+      <button type="submit" style="padding: 0.5rem 1.2rem; border: none; border-radius: 20px; background: #ffa347; color: white; font-weight: bold; cursor: pointer;">Submit Adoption Request</button>
+      <div id="adoption-message" style="margin-top:1rem; color: green; font-weight: 600;"></div>
+    </form>
+  </div>
+  
+  <div id="chatbot-window" role="dialog" aria-label="Chat with Little Paws Bot">
+    <div id="chatbot-header">Chat with Little Paws 🐾</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+      <input id="chat-input" type="text" placeholder="Type a message..." />
+      <button id="chat-send">Send</button>
+    </div>
+  </div>
+
+  <footer>© 2025 Little Paws 🐾 | Designed with love for furry friends</footer>
+
+  <script>
+    const nav = document.getElementById("nav-links");
+    const isLoggedIn = localStorage.getItem("authToken");
+
+    function buildNav() {
+      nav.innerHTML = isLoggedIn
+        ? `<li><a href="user-profile.html">Profile</a></li>
+           <li><a href="vet.html">Vet Services</a></li>
+           <li><a href="rehome.html">Rehome a Pet</a></li>
+           <li><a href="#" onclick="logout()">Logout</a></li>`
+        : `<li><a href="register.html">Register</a></li>
+           <li><a href="login.html">Login</a></li>
+           <li><a href="vet.html">Vet Services</a></li>
+           <li><a href="contact.html">Contact</a></li>
+           <li><a href="help.html">Help</a></li>`;
+      
+      if (isAdminLoggedIn()) {
+        nav.innerHTML += `<li><a href="admin-adoption.html">Admin</a></li>`;
+      }
+    }
+
+    function isAdminLoggedIn() {
+      const authToken = localStorage.getItem("authToken");
+      if (!authToken) return false;
+      try {
+        const payload = JSON.parse(atob(authToken.split('.')[1]));
+        return payload?.isAdmin === true;
+      } catch {
+        return false;
+      }
+    }
+
+    if (isLoggedIn) {
+      document.getElementById("tagline").innerText = `Welcome back 🐶 — Little Paws 🐾 Leads to Happiness`;
+    }
+
+    buildNav();
+
+    function logout() {
+      localStorage.removeItem("authToken");
+      location.href = 'home.html';
+    }
+
+    const chatInput = document.getElementById("chat-input");
+    const chatSend = document.getElementById("chat-send");
+    const chatMessages = document.getElementById("chat-messages");
+    const responses = {
+      adopt: "You can check out available pets by clicking the 'See All Pets' button!",
+      hello: "Hi there! How can I help you?",
+      price: "Adoption is free, but donations are appreciated ❤️"
+    };
+
+    chatSend.addEventListener("click", sendChatMessage);
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendChatMessage();
+    });
+
+    function sendChatMessage() {
+      const msg = chatInput.value.trim();
+      if (!msg) return;
+      const lowerMsg = msg.toLowerCase();
+      const replyKey = Object.keys(responses).find(key => lowerMsg.includes(key));
+      chatMessages.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
+      chatMessages.innerHTML += `<div><strong>Paws Bot:</strong> ${replyKey ? responses[replyKey] : "I'm here to help!"}</div>`;
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      chatInput.value = "";
+    }
+
+    function notifyUser() {
+      const email = document.getElementById("email-input").value;
+      if (email && email.includes("@")) {
+        alert(`Thanks for joining, ${email}! We'll notify you.`);
+        document.getElementById("email-input").value = '';
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+
+    async function submitAdoption(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("adopt-name").value.trim();
+      const email = document.getElementById("adopt-email").value.trim();
+      const pet = document.getElementById("adopt-pet").value.trim();
+      const reason = document.getElementById("adopt-reason").value.trim();
+      const messageDiv = document.getElementById("adoption-message");
+      messageDiv.innerText = "";
+
+      if (!name || !email || !pet || !reason) {
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Please fill out all fields.";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/adoptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, reason, pet })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          messageDiv.style.color = "green";
+          messageDiv.innerText = "Your adoption request has been submitted!";
+          document.getElementById("direct-adoption-form").reset();
+          document.getElementById("adopt-name").focus();
+        } else {
+          messageDiv.style.color = "red";
+          messageDiv.innerText = "Failed to submit. Please try again later.";
+        }
+      } catch (error) {
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Error submitting request.";
+        console.error(error);
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+    }
+  </script>
+</body>
+</html>

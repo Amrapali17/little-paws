@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vet Care – Little Paws 🐾</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff8f0;
+      padding: 2rem;
+      color: #333;
+    }
+    h1 {
+      color: #b35e00;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .vet-services {
+      max-width: 800px;
+      margin: auto;
+      display: grid;
+      gap: 1.5rem;
+    }
+    .service {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+    }
+    .service h3 {
+      color: #d46200;
+      margin-bottom: 0.5rem;
+    }
+    .service button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #ffa347;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .service button:hover {
+      background: #d46200;
+    }
+    /* Booking form styles */
+    #booking-form {
+      max-width: 600px;
+      margin: 3rem auto 1rem auto;
+      background: #fff3e0;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #booking-form label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    #booking-form input, #booking-form select, #booking-form textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.4rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    #booking-form button {
+      margin-top: 1.5rem;
+      background: #d46200;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #booking-form button:hover {
+      background: #b35e00;
+    }
+    #booking-message {
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Veterinary Services</h1>
+  <div class="vet-services" id="vet-services">
+    <!-- Services will be loaded here -->
+  </div>
+
+  <form id="booking-form">
+    <h2>Book a Vet Appointment</h2>
+
+    <label for="service-select">Select Service</label>
+    <select id="service-select" required>
+      <option value="">-- Select a Service --</option>
+      <!-- Options dynamically loaded -->
+    </select>
+
+    <label for="pet-name">Pet Name</label>
+    <input type="text" id="pet-name" placeholder="Enter your pet's name" required />
+
+    <label for="date">Preferred Date</label>
+    <input type="date" id="date" required />
+
+    <label for="reason">Reason for Visit</label>
+    <textarea id="reason" placeholder="Describe the reason for the appointment" rows="3" required></textarea>
+
+    <button type="submit">Book Now</button>
+
+    <div id="booking-message"></div>
+  </form>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const apiBase = 'http://localhost:5000/api/vet';
+      const servicesContainer = document.getElementById('vet-services');
+      const serviceSelect = document.getElementById('service-select');
+      const bookingForm = document.getElementById('booking-form');
+      const bookingMessage = document.getElementById('booking-message');
+    
+      // Fetch and display services
+      async function loadServices() {
+        try {
+          const res = await fetch(`${apiBase}/services`);
+          const data = await res.json();
+    
+          if (data.success) {
+            servicesContainer.innerHTML = '';
+            serviceSelect.innerHTML = '<option value="">-- Select a Service --</option>';
+    
+            data.services.forEach(service => {
+              // Show service card
+              const div = document.createElement('div');
+              div.className = 'service';
+              div.innerHTML = `
+                <h3>${service.name}</h3>
+                <p>Price: ₹${service.price}</p>
+              `;
+              servicesContainer.appendChild(div);
+    
+              // Add to dropdown
+              const option = document.createElement('option');
+              option.value = service.name;
+              option.textContent = `${service.name} - ₹${service.price}`;
+              serviceSelect.appendChild(option);
+            });
+          } else {
+            servicesContainer.innerHTML = '<p>Failed to load services.</p>';
+          }
+        } catch (err) {
+          servicesContainer.innerHTML = `<p>Error loading services: ${err.message}</p>`;
+        }
+      }
+    
+      // Handle booking form
+      bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        bookingMessage.textContent = '';
+    
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          bookingMessage.style.color = 'red';
+          bookingMessage.textContent = 'You must be logged in to book a service.';
+          return;
+        }
+    
+        const serviceName = serviceSelect.value;
+        const petName = document.getElementById('pet-name').value.trim();
+        const date = document.getElementById('date').value;
+        const reason = document.getElementById('reason').value.trim();
+    
+        if (!serviceName || !petName || !date || !reason) {
+          bookingMessage.style.color = 'red';
+          bookingMessage.textContent = 'Please fill all fields.';
+          return;
+        }
+    
+        try {
+          const res = await fetch(`${apiBase}/book`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              petName,
+              date,
+              reason: `${serviceName} - ${reason}`
+            })
+          });
+    
+          const data = await res.json();
+    
+          if (data.success) {
+            bookingMessage.style.color = 'green';
+            bookingMessage.textContent = 'Booking confirmed! We will contact you shortly.';
+            bookingForm.reset();
+          } else {
+            bookingMessage.style.color = 'red';
+            bookingMessage.textContent = `Booking failed: ${data.message || 'Unknown error'}`;
+          }
+        } catch (err) {
+          bookingMessage.style.color = 'red';
+          bookingMessage.textContent = `Error: ${err.message}`;
+        }
+      });
+    
+      loadServices();
+    });
+    </script>
+</body>
+</html>
+    
